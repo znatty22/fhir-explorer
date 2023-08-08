@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="bg-slate-50">
       <body className={nunito.className}>{children}</body>
     </html>
   );
