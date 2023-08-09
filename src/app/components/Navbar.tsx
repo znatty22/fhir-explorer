@@ -1,5 +1,5 @@
-import Avatar from "./Avatar";
 import Logo from "./Logo";
+import MainMenu from "./MainMenu";
 
 export default function Navbar() {
   return (
@@ -18,28 +18,7 @@ export default function Navbar() {
           </h1>
         </div>
         {/* Right side - avatar menu */}
-        <div className="flex items-center space-x-10">
-          <div className="dropdown dropdown-end">
-            <div tabIndex={0} className="btn btn-ghost hover:bg-white">
-              <Avatar name="Natasha Singh" role="admin" />
-            </div>
-            <ul
-              tabIndex={0}
-              className="text-slate-600 dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-            >
-              <li>
-                <a>Profile</a>
-              </li>
-              <li>
-                <a>Settings</a>
-              </li>
-              <li>
-                <a>Logout</a>
-              </li>
-            </ul>
-          </div>
-          {/* Menu  */}
-        </div>
+        <MainMenu name="Natasha Singh" role="admin" src="./avatar.jpg" />
       </div>
     </header>
   );

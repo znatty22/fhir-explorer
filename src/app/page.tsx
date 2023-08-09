@@ -1,18 +1,55 @@
 import Navbar from "./components/Navbar";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { Button } from "@/components/ui/button";
+
+type FhirServer = {
+  name: string;
+  url: string;
+  code: string;
+};
+const FHIR_SERVERS: FhirServer[] = [
+  {
+    name: "Kids First DEV FHIR Server",
+    code: "kf-dev",
+    url: "https://kf-api-fhir-service-upgrade-dev.kf-strides.org",
+  },
+  {
+    name: "Kids First QA FHIR Server",
+    code: "kf-qa",
+    url: "https://kf-api-fhir-service-upgrade-qa.kf-strides.org",
+  },
+  {
+    name: "Kids First PRD FHIR Server",
+    code: "kf-prd",
+    url: "https://kf-api-fhir-service-upgrade.kf-strides.org",
+  },
+  {
+    name: "INCLUDE DCC DEV FHIR Server",
+    code: "include-dev",
+    url: "https://include-api-fhir-service-upgrade-dev.includedcc.org",
+  },
+  {
+    name: "INCLUDE DCC QA FHIR Server",
+    code: "include-qa",
+    url: "https://include-api-fhir-service-upgrade-qa.includedcc.org",
+  },
+  {
+    name: "INCLUDE DCC PRD FHIR Server",
+    code: "include-prd",
+    url: "https://include-api-fhir-service-upgrade.includedcc.org",
+  },
+];
 
 export default function Home() {
   return (
-    <div>
+    <div className="bg-slate-50">
       <Navbar />
       <main>
         <header>
           <div className="container mx-auto my-10">
-            <div>
-              <div className="flex items-center space-x-4">
-                <p className="text-lg text-blue-400">Kids First QA FHIR API</p>
-                <ChevronDownIcon className="h-4 w-4 text-blue-400" />
-              </div>
+            <div className="flex items-center justify-between">
+              <h3 className="text-blue-400 text-md font-light">
+                Kids First PRD FHIR Server
+              </h3>
             </div>
           </div>
         </header>

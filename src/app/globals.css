@@ -3,6 +3,3 @@
 @tailwind utilities;
 
 
-.btn {
-    @apply rounded-full;
-}
