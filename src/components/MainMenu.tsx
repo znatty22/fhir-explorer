@@ -38,7 +38,7 @@ export default function MainMenu({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem>
+          <DropdownMenuItem className="px-4">
             <User className="mr-2 h-4 w-4" />
             Profile
           </DropdownMenuItem>

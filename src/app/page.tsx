@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { CopyIcon, ChevronsUpDownIcon } from "lucide-react";
+
 import {
   Select,
   SelectContent,
@@ -8,18 +11,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 import Navbar from "@/components/Navbar";
-import { CopyIcon } from "lucide-react";
-
-import { useState } from "react";
+import FhirQueryForm from "@/components/FhirQueryForm";
 
 type FhirServer = {
   name: string;
@@ -55,56 +63,73 @@ const FHIR_SERVERS: { [key: string]: FhirServer } = {
 export default function Home() {
   const [fhirServer, setFhirServer] = useState<FhirServer>(FHIR_SERVERS.kfprd);
 
-  function handleServerSelect(value: string) {
-    console.log(value);
-    setFhirServer(FHIR_SERVERS[value]);
+  function handleServerSelect(serverId: string) {
+    setFhirServer(FHIR_SERVERS[serverId]);
   }
 
   return (
     <div className="bg-slate-50">
       <Navbar />
       <main>
-        <header>
-          <div className="container mx-auto my-10">
+        <header className="bg-white py-6">
+          <div className="container mx-auto">
             <div className="flex items-center justify-between">
-              <div>
+              {/* FHIR Server Header */}
+              <div className="flex items-center space-x-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="text-slate-300 p-2">
+                      <ChevronsUpDownIcon className="h-4 w-4 hover:text-blue-400" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    {Object.keys(FHIR_SERVERS).map((serverId: string) => {
+                      return (
+                        <DropdownMenuItem
+                          key={serverId}
+                          className="text-slate-500"
+                          onClick={() => handleServerSelect(serverId)}
+                        >
+                          {FHIR_SERVERS[serverId].name}
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <div className="flex items-center space-x-2">
-                        <h3 className="text-xl text-blue-400 text-md font-light">
-                          {fhirServer.name}
-                        </h3>
-                        <Button variant="ghost">
-                          <CopyIcon className="h-4 w-4 text-slate-300 hover:text-blue-400" />
-                        </Button>
-                      </div>
+                      <h3 className="text-xl text-blue-400 text-md font-light">
+                        {fhirServer.name}
+                      </h3>
                     </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{fhirServer.url}</p>
-                    </TooltipContent>
+                    <TooltipContent>{fhirServer.url}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
+                <Button variant="ghost">
+                  <CopyIcon className="h-4 w-4 text-slate-300 hover:text-blue-400" />
+                </Button>
               </div>
-              <Select onValueChange={handleServerSelect}>
-                <SelectTrigger className="w-1/4 focus:ring-blue-400">
-                  <SelectValue placeholder="Select FHIR Server" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.keys(FHIR_SERVERS).map((serverId: string) => {
-                    return (
-                      <SelectItem key={serverId} value={serverId}>
-                        {FHIR_SERVERS[serverId].name}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
             </div>
           </div>
         </header>
-        <section id="workspace" className="">
-          <div className="container mx-auto my-10"></div>
+        {/* Query FHIR Server */}
+        <section id="workspace">
+          <div className="container mx-auto my-10 space-y-8">
+            <div className="flex flex-col space-y-10">
+              <FhirQueryForm fhirServerUrl={fhirServer.url} />
+              <ScrollArea className="w-full h-24 p-4 bg-white rounded-xl text-slate-500">
+                <div className="flex justify-center items-center">
+                  Placeholder for response headers
+                </div>
+              </ScrollArea>
+              <ScrollArea className="w-full h-96 p-4 bg-white rounded-xl text-slate-500">
+                <div className="flex justify-center items-center">
+                  Placeholder for response body
+                </div>
+              </ScrollArea>
+            </div>
+          </div>
         </section>
       </main>
     </div>
