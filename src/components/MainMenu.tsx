@@ -19,7 +19,7 @@ export default function MainMenu({
   src: string;
 }) {
   return (
-    <div className="flex items-center space-x-4 mx-4">
+    <div className="flex items-center space-x-4">
       <div className="flex flex-col justify-center items-end">
         <h3 className="text-blue-500 text-sm normal-case tracking-wide">
           {name}
@@ -29,7 +29,7 @@ export default function MainMenu({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="invisible">
-            <Avatar className="ring-2 ring-blue-500 ring-offset-base-100 ring-offset-2 hover:ring-indigo-600">
+            <Avatar className="ring-2 ring-blue-500 ring-offset-base-100 ring-offset-2 hover:ring-pink-600">
               <AvatarImage src={src} />
               <AvatarFallback className="text-lg text-blue-400 font-light bg-blue-100">
                 ?
