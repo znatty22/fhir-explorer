@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 
 import {
@@ -18,6 +20,7 @@ export default function FhirQueryForm({
   fhirServerUrl: string;
 }) {
   const [httpMethod, setHttpMethod] = useState<string>(HTTP_METHODS[0]);
+  console.log(fhirServerUrl);
 
   function handleHttpMethodSelect(value: string) {
     setHttpMethod(value);

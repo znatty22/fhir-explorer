@@ -1,3 +1,5 @@
+"use client";
+
 import { CopyIcon, ChevronsUpDownIcon } from "lucide-react";
 
 import {

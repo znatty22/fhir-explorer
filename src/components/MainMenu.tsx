@@ -1,3 +1,5 @@
+"use client";
+
 import { LogOut, Settings, User } from "lucide-react";
 import {
   DropdownMenu,

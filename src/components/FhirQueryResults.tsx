@@ -1,7 +1,6 @@
 "use client";
 
-import ReactJson from "react-json-view";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import JsonView from "react18-json-view";
 
 const HEADERS = `
 Vary: Origin
@@ -98,15 +97,7 @@ export default function FhirQueryResults() {
         </h3>
         <div className="w-full h-[36rem] overflow-scroll p-2 rounded-xl text-slate-500">
           <div className="text-[16px] rounded-lg p-4 bg-[#2b3f4f]">
-            <ReactJson
-              src={JSON.parse(RESULTS)}
-              indentWidth={2}
-              displayDataTypes={false}
-              theme="flat"
-            />
-            <pre className="hidden">
-              {JSON.stringify(JSON.parse(RESULTS), null, 2)}
-            </pre>
+            <JsonView src={JSON.parse(RESULTS)} />
           </div>
           {/*
            */}
