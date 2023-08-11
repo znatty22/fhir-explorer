@@ -7,13 +7,13 @@ export default function Navbar() {
       <div className="container mx-auto flex flex-row items-center justify-between">
         {/* Left side - title */}
         <div className="flex flex-row items-center space-x-5">
-          <div className="rounded-full p-2 ring-2 ring-blue-500 flex justify-center items-center">
+          <div className="rounded-full p-2 ring-2 ring-blue-400 flex justify-center items-center">
             {/* Logo */}
             <div className="h-6 w-6">
-              <Logo className="fill-blue-500" />
+              <Logo className="fill-blue-400" />
             </div>
           </div>
-          <h1 className="text-xl text-blue-500 font-semibold tracking-wide">
+          <h1 className="text-xl text-blue-400 font-semibold tracking-wide">
             D3b FHIR Explorer
           </h1>
         </div>
