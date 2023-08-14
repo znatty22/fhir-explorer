@@ -9,6 +9,7 @@ import FhirQueryResults from "@/components/FhirQueryResults";
 
 export default function Home() {
   const [fhirServer, setFhirServer] = useState<FhirServer>(FHIR_SERVERS.kfprd);
+  const [fhirResponse, setFhirResponse] = useState(null);
 
   function handleServerSelect(serverId: string) {
     setFhirServer(FHIR_SERVERS[serverId]);
@@ -26,8 +27,17 @@ export default function Home() {
         {/* Query FHIR Server */}
         <section id="workspace">
           <div className="container mx-auto my-10 space-y-8">
-            <FhirQueryForm fhirServerUrl={fhirServer.url} />
-            <FhirQueryResults />
+            <FhirQueryForm
+              fhirServerUrl={fhirServer.url}
+              setFhirResponse={setFhirResponse}
+            />
+            {!!fhirResponse ? (
+              <FhirQueryResults response={fhirResponse} />
+            ) : (
+              <div className="flex justify-center items-center font-light text-xl text-slate-400 h-96 border-2 border-dashed ">
+                No results to display
+              </div>
+            )}
           </div>
         </section>
       </main>
