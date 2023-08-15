@@ -4,6 +4,25 @@ export type OidcClient = {
   tokenUrl: string | undefined;
 };
 
+export type FhirResponseData = {
+  error?: string;
+  details?: string;
+  data?: any;
+  headers?: [string, string][];
+  status: number;
+};
+export type TokenResponseData = {
+  error?: string;
+  details?: string;
+  status: number;
+  access_token?: string;
+  expires_in?: number;
+  refresh_expires_in?: number;
+  token_type?: string;
+  "not-before-policy"?: string;
+  scope?: string;
+};
+
 const OIDC_CLIENT_PRD = {
   clientId: process.env.FHIR_EXP_KF_PRD_CLIENT_ID,
   clientSecret: process.env.FHIR_EXP_KF_PRD_CLIENT_SECRET,
@@ -32,25 +51,38 @@ const FHIR_SERVER_OIDC_MAP: {
     OIDC_CLIENT_DEV,
 };
 
-export function getOidcClient(fhirServerUrl: URL) {
+export function getOidcClient(fhirServerUrl: URL): OidcClient {
   const url = String(fhirServerUrl).replace(/\/$/, "").trim();
   return FHIR_SERVER_OIDC_MAP[url];
 }
-export async function getToken(oidcClient: OidcClient) {
+export async function getToken(
+  oidcClient: OidcClient
+): Promise<TokenResponseData> {
   // Exchange OIDC client credentials for bearer token
   const formData = new URLSearchParams();
   formData.append("grant_type", "client_credentials");
   formData.append("client_id", oidcClient.clientId!);
   formData.append("client_secret", oidcClient.clientSecret!);
 
-  const resp = await fetch(oidcClient.tokenUrl!, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: formData,
-  });
-
+  let resp = null;
+  try {
+    resp = await fetch(oidcClient.tokenUrl!, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: formData,
+    });
+  } catch (e: any) {
+    if (e.cause.code === "ENOTFOUND") {
+      return {
+        error: "could_not_connect",
+        details: `Could not connect to OIDC server: ${oidcClient.tokenUrl}`,
+        status: 500,
+      };
+    }
+    throw e;
+  }
   const data = await resp.json();
 
   if (resp.ok && !!data.access_token) {
@@ -63,15 +95,31 @@ export async function getToken(oidcClient: OidcClient) {
     };
   }
 }
-export async function getFhirData(url: URL, oidcToken: string) {
-  const resp = await fetch(url, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${oidcToken}`,
-    },
-  });
+export async function getFhirData(
+  url: URL,
+  oidcToken: string
+): Promise<FhirResponseData> {
+  let resp = null;
+  try {
+    resp = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${oidcToken}`,
+      },
+    });
+  } catch (e: any) {
+    if (e.cause.code === "ENOTFOUND") {
+      return {
+        error: "could_not_connect",
+        details: `Could not connect to FHIR server: ${url}`,
+        status: 500,
+      };
+    }
+    throw e;
+  }
   let data = await resp.text();
+
   try {
     data = JSON.parse(data);
   } catch (e) {
@@ -90,5 +138,5 @@ export async function getFhirData(url: URL, oidcToken: string) {
     };
   }
 
-  return { data, status: resp.status };
+  return { data, headers: [...resp.headers], status: resp.status };
 }
