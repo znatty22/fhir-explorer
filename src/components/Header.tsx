@@ -81,7 +81,7 @@ export function Header({
                 })}
               </DropdownMenuContent>
             </DropdownMenu>
-            <TooltipProvider>
+            <TooltipProvider delayDuration={300}>
               <Tooltip>
                 <TooltipTrigger>
                   <h3 className="text-xl text-blue-400 text-md font-light">
@@ -91,7 +91,10 @@ export function Header({
                 <TooltipContent side="bottom">{fhirServer.url}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <Button variant="ghost">
+            <Button
+              variant="ghost"
+              onClick={() => navigator.clipboard.writeText(fhirServer.url)}
+            >
               <CopyIcon className="h-4 w-4 text-slate-300 hover:text-blue-400" />
             </Button>
           </div>
