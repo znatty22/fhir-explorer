@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import JsonView from "react18-json-view";
 
 function displayHeaders(headers: any) {
@@ -24,7 +21,6 @@ export default function FhirQueryResults({
   data: any;
   statusCode: number | null;
 }) {
-  console.log(JSON.stringify(data));
   return (
     <div className="flex flex-col space-y-4">
       <div className="space-y-2">

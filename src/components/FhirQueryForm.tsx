@@ -61,7 +61,6 @@ export default function FhirQueryForm({
         statusCode: resp.status,
       });
     } catch (e) {
-      console.error(e);
       setFhirResponse({
         headers: null,
         data: { error: `Something went wrong querying ${fhirServerUrl}` },
