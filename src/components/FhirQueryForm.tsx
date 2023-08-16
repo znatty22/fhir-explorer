@@ -27,9 +27,11 @@ async function getFhirData(fhirServerUrl: URL, fhirQuery: any) {
 export default function FhirQueryForm({
   fhirServerUrl,
   setFhirResponse,
+  setLoading,
 }: {
   fhirServerUrl: URL;
   setFhirResponse: any;
+  setLoading: any;
 }) {
   const [httpMethod, setHttpMethod] = useState<string>(HTTP_METHODS[0]);
   const [query, setQuery] = useState<string>("");
@@ -47,6 +49,7 @@ export default function FhirQueryForm({
       return;
     }
 
+    setLoading(true);
     try {
       // Get FHIR data
       const resp = await getFhirData(fhirServerUrl, query);
@@ -59,7 +62,13 @@ export default function FhirQueryForm({
       });
     } catch (e) {
       console.error(e);
+      setFhirResponse({
+        headers: null,
+        data: { error: `Something went wrong querying ${fhirServerUrl}` },
+        statusCode: 400,
+      });
     }
+    setLoading(false);
   }
   return (
     <div className="flex justify-between items-center space-x-2">
@@ -98,7 +107,7 @@ export default function FhirQueryForm({
           </div>
           <Button
             type="submit"
-            className="w-24 rounded-full bg-pink-400 hover:bg-pink-600 transform active:scale-75 transition-transform focus:ring-4 focus:ring-pink-200"
+            className="w-24 rounded-full bg-pink-400 hover:bg-pink-600 focus:ring-4 focus:ring-pink-200"
           >
             Send
           </Button>
