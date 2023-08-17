@@ -19,37 +19,17 @@ export type FhirServer = {
   name: string;
   url: string;
 };
-export const FHIR_SERVERS: { [key: string]: FhirServer } = {
-  kfdev: {
-    name: "Kids First DEV FHIR Server",
-    url: "https://kf-api-fhir-service-upgrade-dev.kf-strides.org",
-  },
-  kfqa: {
-    name: "Kids First QA FHIR Server",
-    url: "https://kf-api-fhir-service-upgrade-qa.kf-strides.org",
-  },
-  kfprd: {
-    name: "Kids First PRD FHIR Server",
-    url: "https://kf-api-fhir-service-upgrade.kf-strides.org",
-  },
-  includedev: {
-    name: "INCLUDE DCC DEV FHIR Server",
-    url: "https://include-api-fhir-service-upgrade-dev.includedcc.org",
-  },
-  includeqa: {
-    name: "INCLUDE DCC QA FHIR Server",
-    url: "https://include-api-fhir-service-upgrade-qa.includedcc.org",
-  },
-  includeprd: {
-    name: "INCLUDE DCC PRD FHIR Server",
-    url: "https://include-api-fhir-service-upgrade.includedcc.org",
-  },
+
+export type FhirServerOptions = {
+  [key: string]: FhirServer;
 };
 
 export function Header({
+  fhirServerOptions,
   fhirServer,
   handleServerSelect,
 }: {
+  fhirServerOptions: FhirServerOptions;
   fhirServer: FhirServer;
   handleServerSelect: (value: string) => void;
 }) {
@@ -66,14 +46,14 @@ export function Header({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
-                {Object.keys(FHIR_SERVERS).map((serverId: string) => {
+                {Object.keys(fhirServerOptions).map((serverId: string) => {
                   return (
                     <DropdownMenuItem
                       key={serverId}
                       className="text-slate-500"
                       onClick={() => handleServerSelect(serverId)}
                     >
-                      {FHIR_SERVERS[serverId].name}
+                      {fhirServerOptions[serverId]?.name}
                     </DropdownMenuItem>
                   );
                 })}

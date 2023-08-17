@@ -1,14 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { Loader } from "./loading";
-import { FhirServer, Header, FHIR_SERVERS } from "@/components/Header";
+import { FhirServer, FhirServerOptions, Header } from "@/components/Header";
 import FhirQueryForm from "@/components/FhirQueryForm";
 import FhirQueryResults from "@/components/FhirQueryResults";
 
+const LOCAL_HOST_FHIR = {
+  name: "Localhost FHIR Server",
+  url: "http://localhost:8000",
+};
+
 export default function Home() {
-  const [fhirServer, setFhirServer] = useState<FhirServer>(FHIR_SERVERS.kfprd);
+  const [fhirServerOptions, setFhirServerOptions] = useState<FhirServerOptions>(
+    {}
+  );
+  const [fhirServer, setFhirServer] = useState<FhirServer>(LOCAL_HOST_FHIR);
   const [loading, setLoading] = useState<boolean>(false);
   const [fhirResponse, setFhirResponse] = useState({
     headers: null,
@@ -16,14 +24,33 @@ export default function Home() {
     statusCode: null,
   });
 
+  useEffect(() => {
+    const fetchServers = async () => {
+      let ignore = false;
+      const resp = await fetch("/api/settings");
+      const data = await resp.json();
+
+      if (!ignore) {
+        setFhirServerOptions(data.settings.fhirServers);
+        setFhirServer(data.settings.fhirServers.kf_prd);
+        ignore = true;
+      }
+    };
+    fetchServers();
+  }, [setFhirServer, setFhirServerOptions]);
+
   function handleServerSelect(serverId: string) {
-    setFhirServer(FHIR_SERVERS[serverId]);
+    setFhirServer(fhirServerOptions[serverId]);
   }
 
   return (
     <main>
       {/* Select FHIR Server */}
-      <Header fhirServer={fhirServer} handleServerSelect={handleServerSelect} />
+      <Header
+        fhirServerOptions={fhirServerOptions}
+        fhirServer={fhirServer}
+        handleServerSelect={handleServerSelect}
+      />
       {/* Query FHIR Server */}
       <section id="workspace">
         <div className="container mx-auto my-10 space-y-8">
