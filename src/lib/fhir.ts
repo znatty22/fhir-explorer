@@ -34,19 +34,19 @@ export type TokenResponseData = {
 };
 
 const OIDC_CLIENT_PRD = {
-  clientId: process.env.FHIR_EXP_KF_PRD_CLIENT_ID,
-  clientSecret: process.env.FHIR_EXP_KF_PRD_CLIENT_SECRET,
-  tokenUrl: process.env.FHIR_EXP_OIDC_TOKEN_URL_PRD,
+  clientId: process.env.FHIR_EXP_PRD_CLIENT_ID,
+  clientSecret: process.env.FHIR_EXP_PRD_CLIENT_SECRET,
+  tokenUrl: process.env.FHIR_EXP_PRD_OIDC_TOKEN_URL,
 };
 const OIDC_CLIENT_QA = {
-  clientId: process.env.FHIR_EXP_KF_QA_CLIENT_ID,
-  clientSecret: process.env.FHIR_EXP_KF_QA_CLIENT_SECRET,
-  tokenUrl: process.env.FHIR_EXP_OIDC_TOKEN_URL_QA,
+  clientId: process.env.FHIR_EXP_QA_CLIENT_ID,
+  clientSecret: process.env.FHIR_EXP_QA_CLIENT_SECRET,
+  tokenUrl: process.env.FHIR_EXP_QA_OIDC_TOKEN_URL,
 };
 const OIDC_CLIENT_DEV = {
-  clientId: process.env.FHIR_EXP_KF_DEV_CLIENT_ID,
-  clientSecret: process.env.FHIR_EXP_KF_DEV_CLIENT_SECRET,
-  tokenUrl: process.env.FHIR_EXP_OIDC_TOKEN_URL_QA,
+  clientId: process.env.FHIR_EXP_DEV_CLIENT_ID,
+  clientSecret: process.env.FHIR_EXP_DEV_CLIENT_SECRET,
+  tokenUrl: process.env.FHIR_EXP_DEV_OIDC_TOKEN_URL,
 };
 
 export const FHIR_SERVERS: FhirServerOptions = {
@@ -113,10 +113,16 @@ export async function getToken(
       body: formData,
     });
   } catch (e: any) {
-    if (e.cause.code === "ENOTFOUND") {
+    if (String(e.cause).includes("ENOTFOUND")) {
       return {
         error: "could_not_connect",
         details: `Could not connect to OIDC server: ${oidcClient.tokenUrl}`,
+        status: 500,
+      };
+    } else if (String(e.cause).includes("ERR_INVALID_URL")) {
+      return {
+        error: "no_oidc_client",
+        details: `Could not find OIDC client`,
         status: 500,
       };
     }
@@ -148,7 +154,7 @@ export async function getFhirData(
       },
     });
   } catch (e: any) {
-    if (e.cause.code === "ENOTFOUND") {
+    if (String(e.cause).includes("ENOTFOUND")) {
       return {
         error: "could_not_connect",
         details: `Could not connect to FHIR server: ${url}`,
