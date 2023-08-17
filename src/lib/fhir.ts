@@ -4,6 +4,16 @@ export type OidcClient = {
   tokenUrl: string | undefined;
 };
 
+export type FhirServer = {
+  name: string;
+  url: string;
+  oidcClient: OidcClient;
+};
+
+export type FhirServerOptions = {
+  [key: string]: FhirServer;
+};
+
 export type FhirResponseData = {
   error?: string;
   details?: string;
@@ -39,17 +49,46 @@ const OIDC_CLIENT_DEV = {
   tokenUrl: process.env.FHIR_EXP_OIDC_TOKEN_URL_QA,
 };
 
+export const FHIR_SERVERS: FhirServerOptions = {
+  kf_dev: {
+    name: "Kids First DEV FHIR Server",
+    url: "https://kf-api-fhir-service-upgrade-dev.kf-strides.org",
+    oidcClient: OIDC_CLIENT_DEV,
+  },
+  kf_qa: {
+    name: "Kids First QA FHIR Server",
+    url: "https://kf-api-fhir-service-upgrade-qa.kf-strides.org",
+    oidcClient: OIDC_CLIENT_QA,
+  },
+  kf_prd: {
+    name: "Kids First PRD FHIR Server",
+    url: "https://kf-api-fhir-service-upgrade.kf-strides.org",
+    oidcClient: OIDC_CLIENT_PRD,
+  },
+  include_dev: {
+    name: "INCLUDE DCC DEV FHIR Server",
+    url: "https://include-api-fhir-service-upgrade-dev.includedcc.org",
+    oidcClient: OIDC_CLIENT_DEV,
+  },
+  include_qa: {
+    name: "INCLUDE DCC QA FHIR Server",
+    url: "https://include-api-fhir-service-upgrade-qa.includedcc.org",
+    oidcClient: OIDC_CLIENT_QA,
+  },
+  include_prd: {
+    name: "INCLUDE DCC PRD FHIR Server",
+    url: "https://include-api-fhir-service-upgrade.includedcc.org",
+    oidcClient: OIDC_CLIENT_PRD,
+  },
+};
+
 const FHIR_SERVER_OIDC_MAP: {
   [key: string]: OidcClient;
-} = {
-  "https://kf-api-fhir-service-upgrade.kf-strides.org": OIDC_CLIENT_PRD,
-  "https://kf-api-fhir-service-upgrade-qa.kf-strides.org": OIDC_CLIENT_QA,
-  "https://kf-api-fhir-service-upgrade-dev.kf-strides.org": OIDC_CLIENT_DEV,
-  "https://include-api-fhir-service-upgrade.includedcc.org": OIDC_CLIENT_PRD,
-  "https://include-api-fhir-service-upgrade-qa.includedcc.org": OIDC_CLIENT_QA,
-  "https://include-api-fhir-service-upgrade-dev.includedcc.org":
-    OIDC_CLIENT_DEV,
-};
+} = Object.fromEntries(
+  Object.keys(FHIR_SERVERS).map((key) => {
+    return [FHIR_SERVERS[key].url, FHIR_SERVERS[key].oidcClient];
+  })
+);
 
 export function getOidcClient(fhirServerUrl: URL): OidcClient {
   const url = String(fhirServerUrl).replace(/\/$/, "").trim();
