@@ -1,19 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "@/lib/auth";
 import { getOidcClient, getToken, getFhirData } from "@/lib/fhir";
 
 type RequiredFhirParams = {
   fhirServerUrl?: string;
   fhirQuery?: string;
 };
+const schema = {
+  fhirServerUrl: {
+    type: "string",
+    example: "http://myfhirserver.com",
+  },
+  fhirQuery: {
+    type: "string",
+    example: "/Patient?gender=male",
+  },
+};
 
 export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  // User must be logged in to use this API route
+  if (!session) {
+    return NextResponse.json(
+      { error: "access_denied", details: "Access Denied", status: 403 },
+      { status: 403 }
+    );
+  }
+
   // Validate request parameters
   let params: RequiredFhirParams = {};
   let error = null;
   try {
     params = await request.json();
   } catch (e) {
-    error = "Badly formatted client data";
+    error = `Invalid client data. Required params are: ${JSON.stringify(
+      schema
+    )}`;
     return NextResponse.json(
       { error: "bad_client_data", details: error },
       { status: 400 }

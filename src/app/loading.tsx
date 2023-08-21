@@ -1,6 +1,6 @@
 import Logo from "@/components/Logo";
 
-export default function PageLoading() {
+export default function PageLoader() {
   return (
     <div className="container mx-auto">
       <div className="flex justify-center items-center h-screen font-extralight">
@@ -14,7 +14,7 @@ export default function PageLoading() {
     </div>
   );
 }
-export function Loader() {
+export function SectionLoader() {
   return (
     <div className="container mx-auto">
       <div className="flex justify-center items-center font-extralight h-96">

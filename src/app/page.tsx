@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-import { Loader } from "./loading";
+import { SectionLoader } from "./loading";
 import { FhirServer, FhirServerOptions, Header } from "@/components/Header";
 import FhirQueryForm from "@/components/FhirQueryForm";
 import FhirQueryResults from "@/components/FhirQueryResults";
@@ -16,6 +16,7 @@ export default function Home() {
   const [fhirServerOptions, setFhirServerOptions] = useState<FhirServerOptions>(
     {}
   );
+
   const [fhirServer, setFhirServer] = useState<FhirServer>(LOCAL_HOST_FHIR);
   const [loading, setLoading] = useState<boolean>(false);
   const [fhirResponse, setFhirResponse] = useState({
@@ -60,7 +61,7 @@ export default function Home() {
             setFhirResponse={setFhirResponse}
           />
           {!!loading ? (
-            <Loader />
+            <SectionLoader />
           ) : !!fhirResponse.data ? (
             <FhirQueryResults
               headers={fhirResponse.headers}
