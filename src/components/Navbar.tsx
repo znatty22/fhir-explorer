@@ -1,7 +1,12 @@
+"use client";
+
+import { useSession } from "next-auth/react";
+
 import Logo from "./Logo";
 import MainMenu from "./MainMenu";
 
 export default function Navbar() {
+  const { data: session } = useSession();
   return (
     <header className="sticky top-0 py-6 bg-white drop-shadow-md">
       <div className="container mx-auto flex flex-row items-center justify-between">
@@ -18,7 +23,9 @@ export default function Navbar() {
           </h1>
         </div>
         {/* Right side - avatar menu */}
-        <MainMenu name="Natasha Singh" role="admin" src="./avatar.jpg" />
+        <div className="flex items-center space-x-2">
+          <MainMenu user={session?.user} />
+        </div>
       </div>
     </header>
   );

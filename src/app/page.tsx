@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession, signIn } from "next-auth/react";
 
-import { Loader } from "./loading";
+import { Loader, LoginLoader } from "./loading";
 import { FhirServer, FhirServerOptions, Header } from "@/components/Header";
 import FhirQueryForm from "@/components/FhirQueryForm";
 import FhirQueryResults from "@/components/FhirQueryResults";
@@ -16,6 +17,8 @@ export default function Home() {
   const [fhirServerOptions, setFhirServerOptions] = useState<FhirServerOptions>(
     {}
   );
+
+  const { data: session, status } = useSession();
   const [fhirServer, setFhirServer] = useState<FhirServer>(LOCAL_HOST_FHIR);
   const [loading, setLoading] = useState<boolean>(false);
   const [fhirResponse, setFhirResponse] = useState({
@@ -23,6 +26,12 @@ export default function Home() {
     data: null,
     statusCode: null,
   });
+
+  useEffect(() => {
+    if (!session?.user) {
+      void signIn("auth0", undefined, { prompt: "login" });
+    }
+  }, [session]);
 
   useEffect(() => {
     const fetchServers = async () => {
@@ -43,7 +52,9 @@ export default function Home() {
     setFhirServer(fhirServerOptions[serverId]);
   }
 
-  return (
+  return status === "loading" || status === "unauthenticated" ? (
+    <LoginLoader />
+  ) : (
     <main>
       {/* Select FHIR Server */}
       <Header
