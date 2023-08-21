@@ -1,4 +1,6 @@
 import { signOut } from "next-auth/react";
+import Link from "next/link";
+
 import { LogOut, Settings, User } from "lucide-react";
 import {
   DropdownMenu,
@@ -32,20 +34,24 @@ export default function MainMenu({ user }: { user: User | undefined }) {
             <Avatar className="ring-2 ring-blue-500 ring-offset-base-100 ring-offset-2 hover:ring-pink-600">
               <AvatarImage src={user?.image || undefined} />
               <AvatarFallback className="text-lg text-blue-400 font-light bg-blue-100">
-                ?
+                {(user && user.name![0].toUpperCase()) || "?"}
               </AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem className="px-4">
-            <User className="mr-2 h-4 w-4" />
-            Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Settings className="mr-2 h-4 w-4" />
-            Settings
-          </DropdownMenuItem>
+          <Link href="/profile">
+            <DropdownMenuItem className="px-4">
+              <User className="mr-2 h-4 w-4" />
+              Profile
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/">
+            <DropdownMenuItem>
+              <Settings className="mr-2 h-4 w-4" />
+              Settings
+            </DropdownMenuItem>
+          </Link>
           <DropdownMenuItem onClick={() => signOut()}>
             <LogOut className="mr-2 h-4 w-4" />
             Logout
