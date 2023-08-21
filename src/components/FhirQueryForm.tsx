@@ -68,7 +68,7 @@ export default function FhirQueryForm({
     setLoading(false);
   }
   return (
-    <div className="flex justify-between items-center space-x-2">
+    <div className="flex justify-between items-center space-x-2 mb-10">
       <Select defaultValue={httpMethod} onValueChange={handleHttpMethodSelect}>
         <SelectTrigger className="bg-transparent border-0 w-48 rounded-xl text-pink-500 font-semibold text-lg focus:ring-pink-400">
           <SelectValue placeholder="HTTP Method" />

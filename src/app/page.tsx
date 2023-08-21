@@ -54,7 +54,7 @@ export default function Home() {
       />
       {/* Query FHIR Server */}
       <section id="workspace">
-        <div className="container mx-auto my-10 space-y-8">
+        <div className="container mx-auto my-10 space-y-4">
           <FhirQueryForm
             setLoading={setLoading}
             fhirServerUrl={new URL(fhirServer.url)}
@@ -69,8 +69,12 @@ export default function Home() {
               statusCode={fhirResponse.statusCode}
             />
           ) : (
-            <div className="flex justify-center items-center font-light text-xl text-slate-400 h-96 border-2 border-dashed ">
-              No results to display
+            <div className="flex flex-col items-center font-light h-96">
+              <img
+                className="w-1/3 h-auto my-4"
+                src="./undraw-question.svg"
+                alt="Query Server"
+              />
             </div>
           )}
         </div>
