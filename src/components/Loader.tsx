@@ -10,7 +10,7 @@ export default function LoginLoader() {
               <Logo className="fill-pink-400 w-6 h-6" />
             </div>
             <h1 className="text-2xl text-pink-400">
-              Redirecting you to login ...
+              Redirecting to FHIR Explorer login ...
             </h1>
           </div>
           <img
