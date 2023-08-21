@@ -1,4 +1,4 @@
-import { CopyIcon, ChevronsUpDownIcon } from "lucide-react";
+import { CopyIcon, FileQuestionIcon, ChevronsUpDownIcon } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -69,12 +69,41 @@ export function Header({
                 <TooltipContent side="bottom">{fhirServer.url}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <Button
-              variant="ghost"
-              onClick={() => navigator.clipboard.writeText(fhirServer.url)}
-            >
-              <CopyIcon className="h-4 w-4 text-slate-300 hover:text-blue-400" />
-            </Button>
+            <div className="flex items-center">
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div
+                      className="p-2 hover:rounded-lg hover:bg-slate-50"
+                      onClick={() =>
+                        navigator.clipboard.writeText(fhirServer.url)
+                      }
+                    >
+                      <CopyIcon className="h-4 w-4 text-slate-300 hover:text-blue-400" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">Copy FHIR URL</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href={`${fhirServer.url}/swagger-ui/`}
+                    >
+                      <div className="p-2 hover:rounded-lg hover:bg-slate-50">
+                        <FileQuestionIcon className="h-4 w-4 text-slate-300 hover:text-blue-400" />
+                      </div>
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    View FHIR API Docs
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
         </div>
       </div>
