@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+.bg-wiggle {
+    background-image: url("/wiggle.svg");
+    background-repeat: repeat;
+    background-size: 5%;
+}
 .json-view {
 	--json-property: #818cf8;
 	--json-index: #f472b6;
