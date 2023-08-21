@@ -1,3 +1,5 @@
+import { getAppEnv } from "./env";
+
 export type OidcClient = {
   clientId: string | undefined;
   clientSecret: string | undefined;
@@ -33,20 +35,22 @@ export type TokenResponseData = {
   scope?: string;
 };
 
+const appEnv: { [k: string]: string | undefined } = getAppEnv();
+
 const OIDC_CLIENT_PRD = {
-  clientId: process.env.FHIR_EXP_PRD_CLIENT_ID,
-  clientSecret: process.env.FHIR_EXP_PRD_CLIENT_SECRET,
-  tokenUrl: process.env.FHIR_EXP_PRD_OIDC_TOKEN_URL,
+  clientId: appEnv.FHIR_EXP_PRD_CLIENT_ID,
+  clientSecret: appEnv.FHIR_EXP_PRD_CLIENT_SECRET,
+  tokenUrl: appEnv.FHIR_EXP_PRD_OIDC_TOKEN_URL,
 };
 const OIDC_CLIENT_QA = {
-  clientId: process.env.FHIR_EXP_QA_CLIENT_ID,
-  clientSecret: process.env.FHIR_EXP_QA_CLIENT_SECRET,
-  tokenUrl: process.env.FHIR_EXP_QA_OIDC_TOKEN_URL,
+  clientId: appEnv.FHIR_EXP_QA_CLIENT_ID,
+  clientSecret: appEnv.FHIR_EXP_QA_CLIENT_SECRET,
+  tokenUrl: appEnv.FHIR_EXP_QA_OIDC_TOKEN_URL,
 };
 const OIDC_CLIENT_DEV = {
-  clientId: process.env.FHIR_EXP_DEV_CLIENT_ID,
-  clientSecret: process.env.FHIR_EXP_DEV_CLIENT_SECRET,
-  tokenUrl: process.env.FHIR_EXP_DEV_OIDC_TOKEN_URL,
+  clientId: appEnv.FHIR_EXP_DEV_CLIENT_ID,
+  clientSecret: appEnv.FHIR_EXP_DEV_CLIENT_SECRET,
+  tokenUrl: appEnv.FHIR_EXP_DEV_OIDC_TOKEN_URL,
 };
 
 export const FHIR_SERVERS: FhirServerOptions = {
