@@ -10,7 +10,7 @@ export function Breadcrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
     <div className="flex items-center space-x-2">
       {breadcrumbs.map((b, i) => {
         return (
-          <div className="flex items-center space-x-2">
+          <div key={i} className="flex items-center space-x-2">
             <div className="hover:underline hover:underline-offset-4">
               <Link
                 href={b.href}
