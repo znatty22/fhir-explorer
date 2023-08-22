@@ -1,5 +1,7 @@
 import { CopyIcon, FileQuestionIcon, ChevronsUpDownIcon } from "lucide-react";
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,10 +30,12 @@ export function Header({
   fhirServerOptions,
   fhirServer,
   handleServerSelect,
+  setView,
 }: {
   fhirServerOptions: FhirServerOptions;
   fhirServer: FhirServer;
   handleServerSelect: (value: string) => void;
+  setView: (value: string) => void;
 }) {
   return (
     <header className="bg-white py-6">
@@ -105,6 +109,19 @@ export function Header({
               </TooltipProvider>
             </div>
           </div>
+          <Tabs defaultValue="query">
+            <TabsList>
+              <TabsTrigger onClick={() => setView("query")} value="query">
+                Query
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => setView("dashboard")}
+                value="dashboard"
+              >
+                Dashboard
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
       </div>
     </header>
