@@ -1,9 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { BookmarkIcon } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from "next/link";
+import { SettingsIcon } from "lucide-react";
 
 import { Breadcrumbs, Breadcrumb } from "@/components/Breadcrumbs";
 
@@ -20,7 +18,6 @@ const LINKS: Breadcrumb[] = [
 
 export default function ProfilePage() {
   const { data: session } = useSession();
-  const user = session?.user;
   return (
     <div className="container mx-auto my-8">
       <div className="my-2">
@@ -31,7 +28,7 @@ export default function ProfilePage() {
           <div className="flex items-center space-x-4 text-slate-600">
             <div className="flex flex-col space-y-4 w-full">
               <div className="flex space-x-2">
-                <BookmarkIcon className="h-6 w-6" />
+                <SettingsIcon className="h-6 w-6" />
                 <div>
                   <h3 className="text-lg">Setup Your FHIR Servers</h3>
                   <h3 className="text-md text-slate-300">Coming Soon!</h3>
