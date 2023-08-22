@@ -12,6 +12,18 @@ function displayHeaders(headers: any) {
   });
 }
 
+function Placeholder() {
+  return (
+    <div className="flex flex-col items-center font-light h-96">
+      <img
+        className="w-1/3 h-auto my-4"
+        src="./undraw-question.svg"
+        alt="Query Server"
+      />
+    </div>
+  );
+}
+
 export default function FhirQueryResults({
   headers,
   data,
@@ -21,7 +33,9 @@ export default function FhirQueryResults({
   data: any;
   statusCode: number | null;
 }) {
-  return (
+  return !data ? (
+    <Placeholder />
+  ) : (
     <div className="flex flex-col space-y-4">
       <div className="space-y-2">
         <div className="flex justify-between items-center">
