@@ -53,6 +53,9 @@ dependencies:
   lodash.groupby:
     specifier: ^4.6.0
     version: 4.6.0
+  lodash.uniqby:
+    specifier: ^4.7.0
+    version: 4.7.0
   lucide-react:
     specifier: ^0.263.1
     version: 0.263.1(react@18.2.0)
@@ -91,6 +94,9 @@ devDependencies:
   '@types/lodash.groupby':
     specifier: ^4.6.7
     version: 4.6.7
+  '@types/lodash.uniqby':
+    specifier: ^4.7.7
+    version: 4.7.7
 
 packages:
 
@@ -1020,6 +1026,12 @@ packages:
 
   /@types/lodash.groupby@4.6.7:
     resolution: {integrity: sha512-dFUR1pqdMgjIBbgPJ/8axJX6M1C7zsL+HF4qdYMQeJ7XOp0Qbf37I3zh9gpXr/ks6tgEYPDRqyZRAnFYvewYHQ==}
+    dependencies:
+      '@types/lodash': 4.14.197
+    dev: true
+
+  /@types/lodash.uniqby@4.7.7:
+    resolution: {integrity: sha512-sv2g6vkCIvEUsK5/Vq17haoZaisfj2EWW8mP7QWlnKi6dByoNmeuHDDXHR7sabuDqwO4gvU7ModIL22MmnOocg==}
     dependencies:
       '@types/lodash': 4.14.197
     dev: true
@@ -2407,6 +2419,10 @@ packages:
 
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+    dev: false
+
+  /lodash.uniqby@4.7.0:
+    resolution: {integrity: sha512-e/zcLx6CSbmaEgFHCA7BnoQKyCtKMxnuWrJygbwPs/AIn+IMKl66L8/s+wBUn5LRw2pZx3bUHibiV1b6aTWIww==}
     dev: false
 
   /loose-envify@1.4.0:
