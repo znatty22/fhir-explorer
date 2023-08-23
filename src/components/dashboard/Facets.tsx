@@ -2,20 +2,41 @@ import groupBy from "lodash.groupby";
 
 import { useEffect, useState } from "react";
 
-import { facets, FacetType, FacetFilter } from "./search";
+import { resourceQueries, QueryDef, ResourceQuery } from "./search";
 import { SectionLoader } from "@/app/loading";
 import Placeholder from "../Placholder";
 
-type FetchResult = {
+type FacetStatsCardType = {
   resourceType: string;
-  filter: FacetFilter;
-  total: number | string;
+  filters: QueryDef[];
+  name?: string;
 };
+
+function reformatResourceQueries(
+  queries: ResourceQuery[]
+): FacetStatsCardType[] {
+  const groupByFilter = groupBy(
+    queries,
+    (query: ResourceQuery) => query.filter.name.split(":")[0]
+  );
+  return Object.entries(groupByFilter).map(([key, items]: any) => {
+    return {
+      resourceType: items[0].resourceType,
+      name: key,
+      filters: items.map((item: any) => {
+        return {
+          ...item.filter,
+        };
+      }),
+    };
+  });
+}
+
 async function fetchTotal(
   fhirServerUrl: string,
   resourceType: string,
-  filter: FacetFilter
-): Promise<FetchResult> {
+  filter: QueryDef
+): Promise<ResourceQuery> {
   try {
     const resp = await fetch("/api/fhir", {
       method: "POST",
@@ -27,25 +48,24 @@ async function fetchTotal(
     const data = await resp.json();
     return {
       resourceType,
-      filter: { ...filter },
-      total: data.total,
+      filter: { ...filter, totalCount: data.total },
     };
   } catch {
     return {
       resourceType,
       filter: {
         ...filter,
+        totalCount: "?",
       },
-      total: "?",
     };
   }
 }
 
-function FacetStatsCard({ facet }: { facet: FacetType }) {
+function FacetStatsCard({ facet }: { facet: FacetStatsCardType }) {
   return (
     <div className="flex flex-col items-start bg-white rounded-lg drop-shadow-md px-4 py-6 w-64 space-y-4">
       <h1 className="text-lg font-semibold text-slate-500 capitalize">
-        {facet.filters[0].display?.name || facet.filters[0].name}
+        {facet.name}
       </h1>
       <div className="flex flex-col items-start space-y-4 font-light text-slate-500">
         {facet.filters.map((f, i) => {
@@ -77,54 +97,32 @@ export default function Facets({
   resourceType: string;
   fhirServerUrl: string;
 }) {
-  const initFacets: FacetType[] = facets.filter(
-    (f) => f.resourceType === resourceType
-  );
+  const [selectedFacets, setSelectedFacets] = useState<
+    FacetStatsCardType[] | null
+  >();
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedFacets, setSelectedFacets] = useState<FacetType[]>(initFacets);
 
   useEffect(() => {
     setLoading(true);
     let ignore = false;
+
     const updateAll = async () => {
-      const queries = facets
+      const queries = resourceQueries
         .filter((f) => f.resourceType === resourceType)
-        .map((facet) => {
-          return facet.filters.map((f) => ({
+        .map((f) => {
+          return {
             fhirServerUrl,
-            resourceType,
-            filter: f,
-          }));
-        })
-        .flat();
+            ...f,
+          };
+        });
+
       const results = await Promise.all(
         queries.map((q) =>
           fetchTotal(q.fhirServerUrl, q.resourceType, q.filter)
         )
       );
-      const groupByFilter = groupBy(
-        results,
-        (facet: FetchResult) => facet.filter.name.split(":")[0]
-      );
-      const reformatted = Object.entries(groupByFilter).map(
-        ([_, items]: any) => {
-          return {
-            resourceType: items[0].resourceType,
-            filters: items.map((item: any) => {
-              return {
-                name: item.filter.name,
-                value: item.filter.value,
-                display: {
-                  name: item.filter.display?.name,
-                  value: item.filter.display?.value,
-                },
-                totalCount: item.total,
-                icon: item.filter.icon,
-              };
-            }),
-          };
-        }
-      );
+      const reformatted = reformatResourceQueries(results);
+
       setSelectedFacets(reformatted);
       setLoading(false);
     };
@@ -134,7 +132,7 @@ export default function Facets({
     }
   }, [resourceType, fhirServerUrl]);
 
-  if (loading) {
+  if (loading || !selectedFacets) {
     return <SectionLoader />;
   }
 

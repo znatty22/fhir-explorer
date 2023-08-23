@@ -1,5 +1,34 @@
-import { BanIcon, CheckIcon, ShieldQuestionIcon } from "lucide-react";
+import uniqBy from "lodash.uniqby";
+
+import {
+  BanIcon,
+  CheckIcon,
+  ShieldQuestionIcon,
+  User2Icon,
+} from "lucide-react";
 import * as Icons from "../icon";
+
+export type QueryDef = {
+  name: string;
+  value: string;
+  display?: {
+    name?: string;
+    value?: string;
+  };
+  totalCount?: string | number;
+  icon?: JSX.Element;
+};
+
+export type ResourceQuery = {
+  resourceType: string;
+  filter: QueryDef;
+};
+
+export type ResourceQueryGroup = {
+  resourceType: string;
+  filters: QueryDef[];
+  name?: string;
+};
 
 type FilterInputs = ([value: string, icon?: JSX.Element] | string)[];
 
@@ -7,7 +36,7 @@ function generateFilters(
   name: string,
   filterInputs: FilterInputs,
   defaultIcon?: JSX.Element
-): FacetFilter[] {
+): QueryDef[] {
   return filterInputs.map((f) => {
     let value;
     let icon;
@@ -25,22 +54,7 @@ function generateFilters(
   });
 }
 
-export type FacetFilter = {
-  name: string;
-  value: string;
-  display?: {
-    name?: string;
-    value?: string;
-  };
-  totalCount?: string | number;
-  icon?: JSX.Element;
-};
-export type FacetType = {
-  resourceType: string;
-  filters: FacetFilter[];
-};
-
-export const facets: FacetType[] = [
+const _queries: ResourceQueryGroup[] = [
   {
     resourceType: "Patient",
     filters: [
@@ -56,16 +70,16 @@ export const facets: FacetType[] = [
       },
       {
         name: "gender",
-        value: "unknown",
+        value: "other",
         icon: (
           <div className="pr-2">
-            <ShieldQuestionIcon />
+            <User2Icon />
           </div>
         ),
       },
       {
         name: "gender",
-        value: "other",
+        value: "unknown",
         icon: (
           <div className="pr-2">
             <ShieldQuestionIcon />
@@ -84,18 +98,6 @@ export const facets: FacetType[] = [
       {
         name: "active",
         value: "false",
-      },
-      {
-        name: "active:missing",
-        value: "true",
-        display: {
-          value: "null",
-        },
-        icon: (
-          <div className="pr-2">
-            <ShieldQuestionIcon />
-          </div>
-        ),
       },
     ],
   },
@@ -137,19 +139,6 @@ export const facets: FacetType[] = [
         icon: <Icons.DnaIcon />,
       },
       {
-        name: "type:missing",
-        value: "true",
-        display: {
-          name: "type",
-          value: "null",
-        },
-        icon: (
-          <div className="pr-2">
-            <ShieldQuestionIcon />
-          </div>
-        ),
-      },
-      {
         name: "status",
         value: "available",
         icon: (
@@ -185,19 +174,6 @@ export const facets: FacetType[] = [
           </div>
         ),
       },
-      {
-        name: "status:missing",
-        value: "true",
-        display: {
-          name: "status",
-          value: "null",
-        },
-        icon: (
-          <div className="pr-2">
-            <ShieldQuestionIcon />
-          </div>
-        ),
-      },
     ],
   },
   {
@@ -222,4 +198,54 @@ export const facets: FacetType[] = [
       "entered-in-error",
     ]),
   },
+  {
+    resourceType: "Observation",
+    filters: generateFilters("status", [
+      "registered",
+      "preliminary",
+      "final",
+      "amended",
+    ]),
+  },
 ];
+
+// Make sure we have no duplicate queries
+const uniqueQueries: { resourceType: string; filter: QueryDef }[] = uniqBy(
+  _queries
+    .map((facet) => {
+      return facet.filters.map((f) => ({
+        resourceType: facet.resourceType,
+        filter: f,
+      }));
+    })
+    .flat(),
+  (q) => `${q.resourceType}${q.filter.name}${q.filter.value}`
+);
+
+// Query for resource's <field>=null
+const nullQueries: { resourceType: string; filter: QueryDef }[] = uniqBy(
+  uniqueQueries,
+  (q) => `${q.resourceType}${q.filter.name.split(":")[0]}`
+).map((q) => {
+  const name = q.filter.name.split(":")[0];
+  return {
+    resourceType: q.resourceType,
+    filter: {
+      name: `${name}:missing`,
+      value: "true",
+      display: {
+        name,
+        value: "null",
+      },
+      icon: (
+        <div className="pr-2">
+          <ShieldQuestionIcon />
+        </div>
+      ),
+    },
+  };
+});
+
+const queries = [...uniqueQueries, ...nullQueries];
+
+export const resourceQueries: ResourceQuery[] = [...queries];
