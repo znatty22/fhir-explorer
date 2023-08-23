@@ -1,8 +1,12 @@
 import * as Icons from "../icon";
 
-type FacetFilter = {
+export type FacetFilter = {
   name: string;
   value: string;
+  display?: {
+    name?: string;
+    value?: string;
+  };
   totalCount?: string | number;
   icon?: JSX.Element;
 };
@@ -44,12 +48,30 @@ export const facets: FacetType[] = [
     resourceType: "Specimen",
     filters: [
       {
-        name: "composition",
-        value: "blood",
+        name: "type:text",
+        value: "Peripheral Whole Blood",
+        display: {
+          name: "type",
+        },
+        icon: <Icons.SpecimenIcon />,
       },
       {
-        name: "composition",
-        value: "saliva",
+        name: "type:text",
+        value: "Saliva Sample",
+        display: {
+          name: "type",
+          value: "Saliva",
+        },
+        icon: <Icons.SpecimenIcon />,
+      },
+      {
+        name: "type:text",
+        value: "DNA",
+        display: {
+          name: "type",
+          value: "DNA Extract",
+        },
+        icon: <Icons.DnaIcon />,
       },
     ],
   },
