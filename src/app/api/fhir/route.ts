@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     url = new URL(
       [
         String(params.fhirServerUrl).replace(/\/$/, ""),
-        params.fhirQuery.replace(/^\/+/g, ""),
+        params.fhirQuery.replace(/^\/+/g, "").replace(/['"]+/g, ""),
       ].join("/")
     );
   } catch (e) {
