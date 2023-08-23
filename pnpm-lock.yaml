@@ -50,6 +50,9 @@ dependencies:
   eslint-config-next:
     specifier: 13.4.13
     version: 13.4.13(eslint@8.46.0)(typescript@5.1.6)
+  lodash.groupby:
+    specifier: ^4.6.0
+    version: 4.6.0
   lucide-react:
     specifier: ^0.263.1
     version: 0.263.1(react@18.2.0)
@@ -83,6 +86,11 @@ dependencies:
   typescript:
     specifier: 5.1.6
     version: 5.1.6
+
+devDependencies:
+  '@types/lodash.groupby':
+    specifier: ^4.6.7
+    version: 4.6.7
 
 packages:
 
@@ -1009,6 +1017,16 @@ packages:
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: false
+
+  /@types/lodash.groupby@4.6.7:
+    resolution: {integrity: sha512-dFUR1pqdMgjIBbgPJ/8axJX6M1C7zsL+HF4qdYMQeJ7XOp0Qbf37I3zh9gpXr/ks6tgEYPDRqyZRAnFYvewYHQ==}
+    dependencies:
+      '@types/lodash': 4.14.197
+    dev: true
+
+  /@types/lodash@4.14.197:
+    resolution: {integrity: sha512-BMVOiWs0uNxHVlHBgzTIqJYmj+PgCo4euloGF+5m4okL3rEYzM2EEv78mw8zWSMM57dM7kVIgJ2QDvwHSoCI5g==}
+    dev: true
 
   /@types/node@20.4.8:
     resolution: {integrity: sha512-0mHckf6D2DiIAzh8fM8f3HQCvMKDpK94YQ0DSVkfWTG9BZleYIWudw9cJxX8oCk9bM+vAkDyujDV6dmKHbvQpg==}
@@ -2381,6 +2399,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       p-locate: 5.0.0
+    dev: false
+
+  /lodash.groupby@4.6.0:
+    resolution: {integrity: sha512-5dcWxm23+VAoz+awKmBaiBvzox8+RqMgFhi7UvX9DHZr2HdxHXM/Wrf8cfKpsW37RNrvtPn6hSwNqurSILbmJw==}
     dev: false
 
   /lodash.merge@4.6.2:
