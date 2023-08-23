@@ -1,5 +1,7 @@
 import JsonView from "react18-json-view";
 
+import Placeholder from "./Placholder";
+
 function displayHeaders(headers: any) {
   // Parse response headers and display
   return headers.map(([key, value]: string[]) => {
@@ -10,18 +12,6 @@ function displayHeaders(headers: any) {
       </div>
     );
   });
-}
-
-function Placeholder() {
-  return (
-    <div className="flex flex-col items-center font-light h-96">
-      <img
-        className="w-1/3 h-auto my-4"
-        src="./undraw-question.svg"
-        alt="Query Server"
-      />
-    </div>
-  );
 }
 
 export default function FhirQueryResults({
