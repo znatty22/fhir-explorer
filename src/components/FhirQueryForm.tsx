@@ -38,9 +38,8 @@ export default function FhirQueryForm({
   function handleHttpMethodSelect(value: string) {
     setHttpMethod(value);
   }
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
 
+  async function submitQuery() {
     // Validate query
     if (!query) {
       setError(true);
@@ -67,6 +66,12 @@ export default function FhirQueryForm({
     }
     setLoading(false);
   }
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    submitQuery();
+  }
+
   return (
     <div className="flex justify-between items-center space-x-2 mb-10">
       <Select defaultValue={httpMethod} onValueChange={handleHttpMethodSelect}>
@@ -104,7 +109,7 @@ export default function FhirQueryForm({
           </div>
           <Button
             type="submit"
-            className="w-24 rounded-full bg-pink-400 hover:bg-pink-600 focus:ring-4 focus:ring-pink-200"
+            className="w-24 rounded-full bg-pink-400 transform active:scale-75 transition-transform hover:bg-pink-600 focus:ring-4 focus:ring-pink-200"
           >
             Send
           </Button>
