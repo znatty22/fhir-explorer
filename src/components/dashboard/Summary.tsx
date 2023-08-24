@@ -96,7 +96,9 @@ export default function Summary({
           const d2 = new Date(b);
           return (d1 as any) - (d2 as any);
         });
-        setLastUpdated(new Date(dates.pop()).toUTCString());
+        const d = new Date(dates.pop());
+
+        setLastUpdated(`${d.toLocaleDateString()} ${d.toLocaleTimeString()}`);
       }
     };
     if (!ignore) {

@@ -31,6 +31,10 @@ type FhirServerWithStatus = FhirServer & {
   lastUpdated?: string;
 };
 
+function formatDate(d: Date) {
+  return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
+}
+
 function FhirServerWithStatus({
   initFhirServer,
 }: {
@@ -40,7 +44,7 @@ function FhirServerWithStatus({
     useState<FhirServerWithStatus>(initFhirServer);
   const status = fhirServer?.status || "unknown";
   const d = new Date();
-  const lastUpdated = `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
+  const lastUpdated = formatDate(d);
 
   async function fetchServerStatus(url: string) {
     let status: ServerStatus = "unknown";
@@ -111,7 +115,7 @@ export default function SettingsPage() {
         const resp = await fetch("/api/settings");
         data = await resp.json();
         status = resp.ok ? "operational" : "unknown";
-        lastUpdated = new Date().toUTCString();
+        lastUpdated = formatDate(new Date());
       } catch (e) {
         error = true;
       }
