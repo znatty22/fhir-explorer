@@ -1,4 +1,11 @@
-import { CopyIcon, FileQuestionIcon, ChevronsUpDownIcon } from "lucide-react";
+import Link from "next/link";
+
+import {
+  CopyIcon,
+  FileQuestionIcon,
+  ChevronsUpDownIcon,
+  RouterIcon,
+} from "lucide-react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -104,6 +111,20 @@ export function Header({
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
                     View FHIR API Docs
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Link href="/settings">
+                      <div className="p-2 hover:rounded-lg hover:bg-slate-50">
+                        <RouterIcon className="h-4 w-4 text-slate-300 hover:text-blue-400" />
+                      </div>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    View Server Status
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
