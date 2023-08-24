@@ -22,12 +22,14 @@ export type QueryDef = {
 export type ResourceQuery = {
   resourceType: string;
   filter: QueryDef;
+  unconstrained?: boolean;
 };
 
 export type ResourceQueryGroup = {
   resourceType: string;
   filters: QueryDef[];
   name?: string;
+  unconstrained?: string[];
 };
 
 type FilterInputs = ([value: string, icon?: JSX.Element] | string)[];
@@ -55,6 +57,22 @@ function generateFilters(
 }
 
 const _queries: ResourceQueryGroup[] = [
+  {
+    resourceType: "ResearchStudy",
+    filters: generateFilters("status", [
+      "active",
+      "administratively-completed",
+      "approved",
+      "closed-to-accrual",
+      "closed-to-accrual-and-intervention",
+      "completed",
+      "disapproved",
+      "in-review",
+      "temporarily-closed-to-accrual",
+      "temporarily-closed-to-accrual-and-intervention",
+      "withdrawn",
+    ]),
+  },
   {
     resourceType: "Patient",
     filters: [
@@ -103,6 +121,7 @@ const _queries: ResourceQueryGroup[] = [
   },
   {
     resourceType: "Specimen",
+    unconstrained: ["type"],
     filters: [
       {
         name: "type:text",
@@ -207,14 +226,23 @@ const _queries: ResourceQueryGroup[] = [
       "amended",
     ]),
   },
+  {
+    resourceType: "DocumentReference",
+    filters: generateFilters("status", [
+      "current",
+      "superseded",
+      "entered-in-error",
+    ]),
+  },
 ];
 
 // Make sure we have no duplicate queries
-const uniqueQueries: { resourceType: string; filter: QueryDef }[] = uniqBy(
+const uniqueQueries: ResourceQuery[] = uniqBy(
   _queries
     .map((facet) => {
       return facet.filters.map((f) => ({
         resourceType: facet.resourceType,
+        unconstrained: facet.unconstrained?.includes(f.name.split(":")[0]),
         filter: f,
       }));
     })
@@ -223,13 +251,14 @@ const uniqueQueries: { resourceType: string; filter: QueryDef }[] = uniqBy(
 );
 
 // Query for resource's <field>=null
-const nullQueries: { resourceType: string; filter: QueryDef }[] = uniqBy(
+const nullQueries: ResourceQuery[] = uniqBy(
   uniqueQueries,
   (q) => `${q.resourceType}${q.filter.name.split(":")[0]}`
 ).map((q) => {
   const name = q.filter.name.split(":")[0];
   return {
     resourceType: q.resourceType,
+    unconstrained: q.unconstrained,
     filter: {
       name: `${name}:missing`,
       value: "true",
@@ -246,6 +275,19 @@ const nullQueries: { resourceType: string; filter: QueryDef }[] = uniqBy(
   };
 });
 
-const queries = [...uniqueQueries, ...nullQueries];
+const queries: ResourceQuery[] = [...uniqueQueries, ...nullQueries];
+
+const unconstrainedFieldsByType = Object.fromEntries(
+  queries
+    .filter((q) => q.unconstrained)
+    .map((q) => [
+      `${q.resourceType}-${q.filter.name.split(":")[0]}`,
+      q.filter.name.split(":")[0],
+    ])
+);
+
+export function isUnconstrainedField(resourceType: string, name: string) {
+  return unconstrainedFieldsByType[`${resourceType}-${name.split(":")[0]}`];
+}
 
 export const resourceQueries: ResourceQuery[] = [...queries];

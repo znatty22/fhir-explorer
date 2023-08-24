@@ -1,26 +1,7 @@
 import { useState, useEffect } from "react";
 
-import {
-  UserCircle2Icon,
-  TestTube2Icon,
-  FileTextIcon,
-  EyeIcon,
-  HeartPulseIcon,
-  ShieldQuestionIcon,
-} from "lucide-react";
-
-const resourceTypeIcons: { [key: string]: React.ReactNode } = {
-  Patient: <UserCircle2Icon />,
-  Specimen: <TestTube2Icon />,
-  Condition: <HeartPulseIcon />,
-  Observation: <EyeIcon />,
-  DocumentReference: <FileTextIcon />,
-};
-const resourceTypes = Object.keys(resourceTypeIcons);
-
-type TotalCountByType = {
-  [key: string]: number;
-};
+import { ShieldQuestionIcon } from "lucide-react";
+import { TotalCountByType, resourceTypes, resourceTypeIcons } from "./common";
 
 type ResourceTotalCardType = {
   resourceType: string;
@@ -62,15 +43,16 @@ export default function Summary({
   fhirServerUrl,
   setSelectedResourceType,
   selectedResourceType,
+  counts,
+  setCounts,
 }: {
   fhirServerUrl: string;
   setSelectedResourceType: any;
   selectedResourceType: string;
+  counts: TotalCountByType;
+  setCounts: any;
 }) {
   const [lastUpdated, setLastUpdated] = useState<string>("Unknown");
-  const [counts, setCounts] = useState<TotalCountByType>(
-    Object.fromEntries(resourceTypes.map((rt) => [rt, 0]))
-  );
 
   // Update resource type counts
   useEffect(() => {
