@@ -15,7 +15,10 @@ export const resourceTypeIcons: { [key: string]: React.ReactNode } = {
   Observation: <EyeIcon />,
   DocumentReference: <FileTextIcon />,
 };
-export const resourceTypes = [...Object.keys(resourceTypeIcons)];
+
+export const resourceTypes = [...Object.keys(resourceTypeIcons)] as const;
+
+export type IResourceTypes = typeof resourceTypes[number];
 
 export type TotalCountByType = {
   [key: string]: number;

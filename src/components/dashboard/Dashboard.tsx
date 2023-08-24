@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import Summary from "./Summary";
-import { resourceTypes, TotalCountByType } from "./common";
+import { IResourceTypes, resourceTypes, TotalCountByType } from "./common";
 import Facets from "./Facets";
 
 export default function Dashboard({
@@ -10,7 +10,7 @@ export default function Dashboard({
   fhirServerUrl: string;
 }) {
   const [selectedResourceType, setSelectedResourceType] =
-    useState<string>("Patient");
+    useState<IResourceTypes>("ResearchStudy");
   const [counts, setCounts] = useState<TotalCountByType>(
     Object.fromEntries(resourceTypes.map((rt) => [rt, 0]))
   );
