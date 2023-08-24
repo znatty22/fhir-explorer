@@ -7,7 +7,7 @@ import {
   RouterIcon,
 } from "lucide-react";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
   DropdownMenu,
@@ -49,11 +49,11 @@ export function Header({
       <div className="container mx-auto">
         <div className="flex items-center justify-between">
           {/* FHIR Server Header */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="text-slate-300 p-2">
-                  <ChevronsUpDownIcon className="h-4 w-4 hover:text-blue-400" />
+                <Button variant="ghost" className="text-slate-400 p-2">
+                  <ChevronsUpDownIcon className="transform active:scale-75 transition-transform h-4 w-4 hover:text-blue-400" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
@@ -80,17 +80,17 @@ export function Header({
                 <TooltipContent side="bottom">{fhirServer.url}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <div className="flex items-center">
+            <div className="bg-slate-50 rounded-xl text-slate-400 flex items-center mx-4 px-2">
               <TooltipProvider delayDuration={300}>
                 <Tooltip>
                   <TooltipTrigger>
                     <div
-                      className="p-2 hover:rounded-lg hover:bg-slate-50"
+                      className="p-2 transform active:scale-75 transition-transform hover:rounded-lg "
                       onClick={() =>
                         navigator.clipboard.writeText(fhirServer.url)
                       }
                     >
-                      <CopyIcon className="h-4 w-4 text-slate-300 hover:text-blue-400" />
+                      <CopyIcon className="h-4 w-4 hover:text-blue-400" />
                     </div>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">Copy FHIR URL</TooltipContent>
@@ -104,8 +104,8 @@ export function Header({
                       rel="noopener noreferrer"
                       href={`${fhirServer.url}/swagger-ui/`}
                     >
-                      <div className="p-2 hover:rounded-lg hover:bg-slate-50">
-                        <FileQuestionIcon className="h-4 w-4 text-slate-300 hover:text-blue-400" />
+                      <div className="p-2 transform active:scale-75 transition-transform hover:rounded-lg">
+                        <FileQuestionIcon className="h-4 w-4 hover:text-blue-400" />
                       </div>
                     </a>
                   </TooltipTrigger>
@@ -118,8 +118,8 @@ export function Header({
                 <Tooltip>
                   <TooltipTrigger>
                     <Link href="/settings">
-                      <div className="p-2 hover:rounded-lg hover:bg-slate-50">
-                        <RouterIcon className="h-4 w-4 text-slate-300 hover:text-blue-400" />
+                      <div className="p-2 transform active:scale-75 transition-transform hover:rounded-lg">
+                        <RouterIcon className="h-4 w-4 hover:text-blue-400" />
                       </div>
                     </Link>
                   </TooltipTrigger>
