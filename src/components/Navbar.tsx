@@ -9,7 +9,7 @@ import MainMenu from "./MainMenu";
 export default function Navbar() {
   const { data: session } = useSession();
   return (
-    <header className="sticky top-0 py-6 bg-white drop-shadow-md">
+    <header className="sticky top-0 py-6 bg-white drop-shadow-md z-10">
       <div className="container mx-auto flex flex-row items-center justify-between">
         {/* Left side - title */}
         <Link href="/">

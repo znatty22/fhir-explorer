@@ -6,6 +6,7 @@ import { SectionLoader } from "./loading";
 import { FhirServer, FhirServerOptions, Header } from "@/components/Header";
 import FhirQueryForm from "@/components/FhirQueryForm";
 import FhirQueryResults from "@/components/FhirQueryResults";
+import Dashboard from "@/components/dashboard/Dashboard";
 
 const LOCAL_HOST_FHIR = {
   name: "Localhost FHIR Server",
@@ -19,6 +20,7 @@ export default function Home() {
 
   const [fhirServer, setFhirServer] = useState<FhirServer>(LOCAL_HOST_FHIR);
   const [loading, setLoading] = useState<boolean>(false);
+  const [view, setView] = useState<string>("query");
   const [fhirResponse, setFhirResponse] = useState({
     headers: null,
     data: null,
@@ -51,30 +53,34 @@ export default function Home() {
         fhirServerOptions={fhirServerOptions}
         fhirServer={fhirServer}
         handleServerSelect={handleServerSelect}
+        setView={setView}
       />
       {/* Query FHIR Server */}
-      <section id="workspace">
-        <div className="container mx-auto my-10 space-y-8">
-          <FhirQueryForm
-            setLoading={setLoading}
-            fhirServerUrl={new URL(fhirServer.url)}
-            setFhirResponse={setFhirResponse}
-          />
-          {!!loading ? (
-            <SectionLoader />
-          ) : !!fhirResponse.data ? (
-            <FhirQueryResults
-              headers={fhirResponse.headers}
-              data={fhirResponse.data}
-              statusCode={fhirResponse.statusCode}
+      {view === "query" ? (
+        <section id="workspace">
+          <div className="container mx-auto my-10 space-y-4">
+            <FhirQueryForm
+              setLoading={setLoading}
+              fhirServerUrl={new URL(fhirServer.url)}
+              setFhirResponse={setFhirResponse}
             />
-          ) : (
-            <div className="flex justify-center items-center font-light text-xl text-slate-400 h-96 border-2 border-dashed ">
-              No results to display
-            </div>
-          )}
-        </div>
-      </section>
+            {!!loading ? (
+              <SectionLoader />
+            ) : (
+              <FhirQueryResults
+                headers={fhirResponse.headers}
+                data={fhirResponse.data}
+                statusCode={fhirResponse.statusCode}
+              />
+            )}
+          </div>
+        </section>
+      ) : (
+        /* Dashboard */
+        <section id="dashboard">
+          <Dashboard fhirServerUrl={fhirServer.url} />
+        </section>
+      )}
     </main>
   );
 }

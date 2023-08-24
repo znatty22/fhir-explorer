@@ -46,7 +46,7 @@ export default function MainMenu({ user }: { user: User | undefined }) {
               Profile
             </DropdownMenuItem>
           </Link>
-          <Link href="/">
+          <Link href="/settings">
             <DropdownMenuItem>
               <Settings className="mr-2 h-4 w-4" />
               Settings

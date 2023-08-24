@@ -1,5 +1,7 @@
 import JsonView from "react18-json-view";
 
+import Placeholder from "./Placholder";
+
 function displayHeaders(headers: any) {
   // Parse response headers and display
   return headers.map(([key, value]: string[]) => {
@@ -21,7 +23,9 @@ export default function FhirQueryResults({
   data: any;
   statusCode: number | null;
 }) {
-  return (
+  return !data ? (
+    <Placeholder />
+  ) : (
     <div className="flex flex-col space-y-4">
       <div className="space-y-2">
         <div className="flex justify-between items-center">
