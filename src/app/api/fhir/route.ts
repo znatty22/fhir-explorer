@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
-import { getOidcClient, getToken, getFhirData } from "@/lib/fhir";
+import {
+  getOidcClient,
+  getToken,
+  getFhirData,
+  getTokenFromProxy,
+} from "@/lib/fhir";
 
 type RequiredFhirParams = {
   fhirServerUrl?: string;
@@ -55,6 +60,16 @@ export async function POST(request: NextRequest) {
   // Lookup OIDC client creds from server url
   const fhirServerUrl = new URL(params.fhirServerUrl);
   const oidcClient = getOidcClient(fhirServerUrl);
+
+  // No OIDC configured for server
+  if (Object.values(oidcClient).every((v) => !v)) {
+    error = `No OIDC client configured for FHIR server: ${params.fhirServerUrl}. Ensure env variables are set`;
+    return NextResponse.json(
+      { error: "fhir_server_missing_oidc_config", details: error },
+      { status: 400 }
+    );
+  }
+  // Server does not exist in list of configured servers
   if (!oidcClient) {
     error = `Unknown FHIR server url: ${params.fhirServerUrl}`;
     return NextResponse.json(
@@ -62,8 +77,16 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
-  // Get token
-  const tokenResp = await getToken(oidcClient);
+  // Get access token
+  // If fetching the access token for the local FHIR server then we must
+  // fetch it from the issuer proxy since we cannot query the issuer directly
+  // See https://github.com/kids-first/kf-api-fhir-service#-important-note-about-keycloak
+  let tokenResp;
+  if (String(fhirServerUrl).startsWith("http://localhost")) {
+    tokenResp = await getTokenFromProxy(oidcClient);
+  } else {
+    tokenResp = await getToken(oidcClient);
+  }
   if (tokenResp.error) {
     return NextResponse.json(tokenResp, { status: tokenResp.status });
   }
