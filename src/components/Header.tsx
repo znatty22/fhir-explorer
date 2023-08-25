@@ -49,7 +49,7 @@ export function Header({
       <div className="container mx-auto">
         <div className="flex items-center justify-between">
           {/* FHIR Server Header */}
-          <div className="flex items-center">
+          <div className="flex items-center space-x-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="text-slate-400 p-2">
