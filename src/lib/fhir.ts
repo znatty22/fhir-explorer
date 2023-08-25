@@ -1,5 +1,3 @@
-import { getAppEnv } from "./env";
-
 export type OidcClient = {
   clientId: string | undefined;
   clientSecret: string | undefined;
@@ -34,9 +32,6 @@ export type TokenResponseData = {
   "not-before-policy"?: string;
   scope?: string;
 };
-
-// Validate that correct app environment variables are set
-getAppEnv();
 
 const OIDC_CLIENT_PRD = {
   clientId: process.env.FHIR_EXP_PRD_CLIENT_ID,

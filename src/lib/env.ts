@@ -5,9 +5,6 @@ const baseVars = [
   "AUTH0_CLIENT_ID",
   "AUTH0_CLIENT_SECRET",
   "AUTH0_ISSUER",
-  "FHIR_EXP_LOCAL_CLIENT_ID",
-  "FHIR_EXP_LOCAL_CLIENT_SECRET",
-  "FHIR_EXP_LOCAL_OIDC_TOKEN_URL",
 ];
 
 const externalServices = [
@@ -22,15 +19,21 @@ const externalServices = [
   "FHIR_EXP_DEV_OIDC_TOKEN_URL",
 ];
 
+const localService = [
+  "FHIR_EXP_LOCAL_CLIENT_ID",
+  "FHIR_EXP_LOCAL_CLIENT_SECRET",
+  "FHIR_EXP_LOCAL_OIDC_TOKEN_URL",
+];
+
 let envVars: string[] = [...baseVars];
 
 if (process.env.NODE_ENV !== "production") {
-  envVars.push("NEXTAUTH_URL");
+  envVars = [...envVars, ...localService, "NEXTAUTH_URL"];
 } else {
-  envVars = [...externalServices];
+  envVars = [...envVars, ...externalServices];
 }
 
-export function getAppEnv() {
+export function validateAppEnv() {
   // Check that all env vars are set or throw Error
   envVars.map((v) => invariantEnv(process.env[v], v));
 
