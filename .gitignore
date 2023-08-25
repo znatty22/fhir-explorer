@@ -37,3 +37,6 @@ next-env.d.ts
 # Vim 
 *.swp
 *.swo
+
+# Generated fhir_server dir
+fhir_server
