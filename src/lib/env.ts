@@ -1,9 +1,16 @@
 import { invariantEnv } from "./utils";
 
-const envVars = [
+const baseVars = [
+  "NEXTAUTH_SECRET",
   "AUTH0_CLIENT_ID",
   "AUTH0_CLIENT_SECRET",
   "AUTH0_ISSUER",
+  "FHIR_EXP_LOCAL_CLIENT_ID",
+  "FHIR_EXP_LOCAL_CLIENT_SECRET",
+  "FHIR_EXP_LOCAL_OIDC_TOKEN_URL",
+];
+
+const externalServices = [
   "FHIR_EXP_PRD_CLIENT_ID",
   "FHIR_EXP_PRD_CLIENT_SECRET",
   "FHIR_EXP_PRD_OIDC_TOKEN_URL",
@@ -15,8 +22,12 @@ const envVars = [
   "FHIR_EXP_DEV_OIDC_TOKEN_URL",
 ];
 
+let envVars: string[] = [...baseVars];
+
 if (process.env.NODE_ENV !== "production") {
   envVars.push("NEXTAUTH_URL");
+} else {
+  envVars = [...externalServices];
 }
 
 export function getAppEnv() {
