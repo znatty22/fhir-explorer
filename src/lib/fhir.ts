@@ -55,11 +55,6 @@ const OIDC_CLIENT_LOCAL = {
 };
 
 export const FHIR_SERVERS: FhirServerOptions = {
-  localhost: {
-    name: "Localhost FHIR Server",
-    url: "http://localhost:8000",
-    oidcClient: OIDC_CLIENT_LOCAL,
-  },
   kf_dev: {
     name: "Kids First DEV FHIR Server",
     url: "https://kf-api-fhir-service-upgrade-dev.kf-strides.org",
@@ -91,6 +86,15 @@ export const FHIR_SERVERS: FhirServerOptions = {
     oidcClient: OIDC_CLIENT_PRD,
   },
 };
+
+// Only add localhost if not prd
+if (process.env.NODE_ENV !== "production") {
+  FHIR_SERVERS["localhost"] = {
+    name: "Localhost FHIR Server",
+    url: "http://localhost:8000",
+    oidcClient: OIDC_CLIENT_LOCAL,
+  };
+}
 
 const FHIR_SERVER_OIDC_MAP: {
   [key: string]: OidcClient;
