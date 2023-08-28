@@ -49,6 +49,7 @@ async function fetchTotal(
     filter: { ...filter, totalCount: "?" },
   };
 
+  console.log(`/${resourceType}?${filter.name}=${filter.value}&_summary=count`);
   try {
     const resp = await fetch("/api/fhir", {
       method: "POST",
