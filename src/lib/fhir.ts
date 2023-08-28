@@ -1,5 +1,3 @@
-import { getAppEnv } from "./env";
-
 export type OidcClient = {
   clientId: string | undefined;
   clientSecret: string | undefined;
@@ -35,22 +33,25 @@ export type TokenResponseData = {
   scope?: string;
 };
 
-const appEnv: { [k: string]: string | undefined } = getAppEnv();
-
 const OIDC_CLIENT_PRD = {
-  clientId: appEnv.FHIR_EXP_PRD_CLIENT_ID,
-  clientSecret: appEnv.FHIR_EXP_PRD_CLIENT_SECRET,
-  tokenUrl: appEnv.FHIR_EXP_PRD_OIDC_TOKEN_URL,
+  clientId: process.env.FHIR_EXP_PRD_CLIENT_ID,
+  clientSecret: process.env.FHIR_EXP_PRD_CLIENT_SECRET,
+  tokenUrl: process.env.FHIR_EXP_PRD_OIDC_TOKEN_URL,
 };
 const OIDC_CLIENT_QA = {
-  clientId: appEnv.FHIR_EXP_QA_CLIENT_ID,
-  clientSecret: appEnv.FHIR_EXP_QA_CLIENT_SECRET,
-  tokenUrl: appEnv.FHIR_EXP_QA_OIDC_TOKEN_URL,
+  clientId: process.env.FHIR_EXP_QA_CLIENT_ID,
+  clientSecret: process.env.FHIR_EXP_QA_CLIENT_SECRET,
+  tokenUrl: process.env.FHIR_EXP_QA_OIDC_TOKEN_URL,
 };
 const OIDC_CLIENT_DEV = {
-  clientId: appEnv.FHIR_EXP_DEV_CLIENT_ID,
-  clientSecret: appEnv.FHIR_EXP_DEV_CLIENT_SECRET,
-  tokenUrl: appEnv.FHIR_EXP_DEV_OIDC_TOKEN_URL,
+  clientId: process.env.FHIR_EXP_DEV_CLIENT_ID,
+  clientSecret: process.env.FHIR_EXP_DEV_CLIENT_SECRET,
+  tokenUrl: process.env.FHIR_EXP_DEV_OIDC_TOKEN_URL,
+};
+const OIDC_CLIENT_LOCAL = {
+  clientId: process.env.FHIR_EXP_LOCAL_CLIENT_ID,
+  clientSecret: process.env.FHIR_EXP_LOCAL_CLIENT_SECRET,
+  tokenUrl: process.env.FHIR_EXP_LOCAL_OIDC_TOKEN_URL,
 };
 
 export const FHIR_SERVERS: FhirServerOptions = {
@@ -86,6 +87,15 @@ export const FHIR_SERVERS: FhirServerOptions = {
   },
 };
 
+// Only add localhost if not prd
+if (process.env.NODE_ENV !== "production") {
+  FHIR_SERVERS["localhost"] = {
+    name: "Localhost FHIR Server",
+    url: "http://localhost:8000",
+    oidcClient: OIDC_CLIENT_LOCAL,
+  };
+}
+
 const FHIR_SERVER_OIDC_MAP: {
   [key: string]: OidcClient;
 } = Object.fromEntries(
@@ -98,6 +108,63 @@ export function getOidcClient(fhirServerUrl: URL): OidcClient {
   const url = String(fhirServerUrl).replace(/\/$/, "").trim();
   return FHIR_SERVER_OIDC_MAP[url];
 }
+
+export async function getTokenFromProxy(
+  oidcClient: OidcClient
+): Promise<TokenResponseData> {
+  // If running local FHIR server, we cannot query issuer directly
+  // Must go through the proxy
+  const url = new URL(oidcClient.tokenUrl || "");
+  const issuer = url.origin + url.pathname.split("/").slice(0, 3).join("/");
+
+  const payload = {
+    kwargs: {
+      data: {
+        grant_type: "client_credentials",
+        client_id: oidcClient.clientId,
+        client_secret: oidcClient.clientSecret,
+      },
+    },
+    http_operation: "post",
+    endpoint: `${issuer}/protocol/openid-connect/token`,
+  };
+
+  if (!process.env.KEYCLOAK_PROXY_URL) {
+    return {
+      error: "token_fetch_error",
+      details:
+        "Cannot get token for local FHIR server. You must have the keycloak proxy setup and the KEYCLOAK_PROXY_URL set in your .env.local",
+      status: 400,
+    };
+  }
+
+  let data = "";
+  let err = false;
+  try {
+    const resp = await fetch(process.env.KEYCLOAK_PROXY_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    err = !resp.ok;
+    data = await resp.text();
+  } catch (e) {
+    err = true;
+    console.error(e);
+    console.error(data);
+  }
+  if (err) {
+    return {
+      error: "token_fetch_error",
+      details: `Failed to fetch token from proxy ${process.env.KEYCLOAK_PROXY_URL}`,
+      status: 400,
+    };
+  }
+  return JSON.parse(data);
+}
+
 export async function getToken(
   oidcClient: OidcClient
 ): Promise<TokenResponseData> {

@@ -1,15 +1,16 @@
 import { NextAuthOptions } from "next-auth";
 import Auth0Provider from "next-auth/providers/auth0";
-import { getAppEnv } from "./env";
+import { validateAppEnv } from "./env";
 
-const appEnv = getAppEnv();
+// Ensure app env vars exist
+validateAppEnv();
 
 export const authOptions: NextAuthOptions = {
   providers: [
     Auth0Provider({
-      clientId: appEnv.AUTH0_CLIENT_ID!,
-      clientSecret: appEnv.AUTH0_CLIENT_SECRET!,
-      issuer: appEnv.AUTH0_ISSUER!,
+      clientId: process.env.AUTH0_CLIENT_ID!,
+      clientSecret: process.env.AUTH0_CLIENT_SECRET!,
+      issuer: process.env.AUTH0_ISSUER!,
     }),
   ],
 };

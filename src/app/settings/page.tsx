@@ -35,6 +35,39 @@ function formatDate(d: Date) {
   return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
 }
 
+async function fetchServerConfigs(): Promise<{
+  fhirServerConfigs: FhirServerConfig[];
+  error: boolean;
+}> {
+  let data;
+  let error = false;
+  try {
+    const resp = await fetch("/api/settings");
+    data = await resp.json();
+  } catch (e) {
+    error = true;
+  }
+
+  return {
+    error: error || !data.settings.fhirServers,
+    fhirServerConfigs: data.settings.fhirServers,
+  };
+}
+
+async function fetchServerStatus(url: string) {
+  let status: ServerStatus = "unknown";
+  try {
+    const resp = await fetch(new URL(`${url}/endpoint-health`));
+    const data = await resp.json();
+    if (resp.ok) {
+      status = data.status === "OPERATIONAL" ? "operational" : "offline";
+    }
+  } catch (e) {
+    status = "offline";
+  }
+  return status;
+}
+
 function FhirServerWithStatus({
   initFhirServer,
 }: {
@@ -42,30 +75,17 @@ function FhirServerWithStatus({
 }) {
   const [fhirServer, setFhirServer] =
     useState<FhirServerWithStatus>(initFhirServer);
-  const status = fhirServer?.status || "unknown";
-  const d = new Date();
-  const lastUpdated = formatDate(d);
 
-  async function fetchServerStatus(url: string) {
-    let status: ServerStatus = "unknown";
-    try {
-      const resp = await fetch(new URL(`${url}/endpoint-health`));
-      const data = await resp.json();
-      if (resp.ok) {
-        status = data.status === "OPERATIONAL" ? "operational" : "offline";
-      }
-    } catch (e) {
-      status = "offline";
-    }
+  async function fetchAndSetServerStatus(url: string) {
     setFhirServer({
       ...fhirServer,
-      status,
-      lastUpdated,
+      status: await fetchServerStatus(url),
+      lastUpdated: formatDate(new Date()),
     });
   }
 
   useInterval(
-    async () => fetchServerStatus(fhirServer.url),
+    async () => fetchAndSetServerStatus(fhirServer.url),
     STATUS_INTERVAL_MS
   );
 
@@ -89,9 +109,11 @@ function FhirServerWithStatus({
       </h3>
       <div className="col-span-1">
         <Badge
-          className={`${statusStyles[status]} capitalize hover:bg-slate-100 text-left`}
+          className={`${
+            statusStyles[fhirServer.status || "unknown"]
+          } capitalize hover:bg-slate-100 text-left`}
         >
-          {status}
+          {fhirServer.status || "unknown"}
         </Badge>
       </div>
     </div>
@@ -103,45 +125,32 @@ export default function SettingsPage() {
   const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchServers = async () => {
-      let error = false;
+    const doWork = async () => {
       let ignore = false;
+      const { error, fhirServerConfigs } = await fetchServerConfigs();
 
-      let lastUpdated = "unknown";
-      let status: ServerStatus = "offline";
-      let data;
-
-      try {
-        const resp = await fetch("/api/settings");
-        data = await resp.json();
-        status = resp.ok ? "operational" : "unknown";
-        lastUpdated = formatDate(new Date());
-      } catch (e) {
-        error = true;
-      }
-
-      if (error || !data) {
+      if (error) {
         setError(true);
         return;
       }
 
+      const getServerStatus = async (fhirServerConfig: FhirServerConfig) => {
+        return {
+          ...fhirServerConfig,
+          status: await fetchServerStatus(fhirServerConfig.url),
+          lastUpdated: formatDate(new Date()),
+        };
+      };
+
       if (!ignore) {
-        const servers: FhirServerConfig[] = data.settings.fhirServers;
-        const fhirServersWithStatus: FhirServerWithStatus[] = Object.values(
-          servers
-        ).map((s: FhirServerConfig) => {
-          return {
-            name: s.name,
-            url: s.url,
-            status,
-            lastUpdated,
-          };
-        });
-        setFhirServers(fhirServersWithStatus);
+        const result = await Promise.all(
+          Object.values(fhirServerConfigs).map((s) => getServerStatus(s))
+        );
+        setFhirServers(result);
         ignore = true;
       }
     };
-    fetchServers();
+    doWork();
   }, []);
 
   if (!fhirServers) {
@@ -150,8 +159,8 @@ export default function SettingsPage() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center space-y-4">
-        <h3 className="text-slate-400 text-md font-light">
+      <div className="flex flex-col items-center space-y-4 my-20">
+        <h3 className="text-slate-400 text-lg font-light">
           Something went wrong fetching FHIR servers
         </h3>
         <Placeholder />

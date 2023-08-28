@@ -105,7 +105,7 @@ export default function Summary({
       updateAll();
       ignore = true;
     }
-  }, [fhirServerUrl]);
+  }, [fhirServerUrl, setCounts]);
 
   return (
     <div className="flex flex-col">
