@@ -58,8 +58,8 @@ export default function FhirQueryResults({
             <div className="text-[16px] rounded-lg p-4 bg-[#2b3f4f]">
               {typeof data === "object" ? (
                 <JsonView
-                  collapseObjectsAfterLength={100}
-                  collapseStringsAfterLength={500}
+                  collapseObjectsAfterLength={500}
+                  collapseStringsAfterLength={10000}
                   src={data}
                 />
               ) : (
