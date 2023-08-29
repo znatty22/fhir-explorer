@@ -247,8 +247,11 @@ export async function getFhirData(
   }
 
   if (resp.status === 404) {
+    const error = String(data).includes("Unknown resource type")
+      ? "unknown_fhir_resource_type"
+      : "resource_not_found";
     return {
-      error: "unknown_fhir_resource_type",
+      error,
       details: data,
       status: resp.status,
     };
