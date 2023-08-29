@@ -30,8 +30,8 @@ export async function POST(request: NextRequest) {
   // User must be logged in to use this API route
   if (!session) {
     return NextResponse.json(
-      { error: "access_denied", details: "Access Denied", status: 403 },
-      { status: 403 }
+      { error: "unauthorized", details: "Access Denied", status: 401 },
+      { status: 401 }
     );
   }
 
