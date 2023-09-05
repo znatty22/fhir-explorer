@@ -40,3 +40,6 @@ next-env.d.ts
 
 # Generated fhir_server dir
 fhir_server
+
+# Sentry Auth Token
+.sentryclirc
