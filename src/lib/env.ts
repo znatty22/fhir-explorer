@@ -36,7 +36,7 @@ export function isProduction() {
 export function validateAppEnv() {
   let envVars: string[] = [...BASE_ENV];
 
-  if (isProduction()) {
+  if (!isProduction()) {
     envVars = [...envVars, ...LOCALHOST_ENV, "NEXTAUTH_URL"];
   } else {
     envVars = [...envVars, ...EXT_SERVICES_ENV];
