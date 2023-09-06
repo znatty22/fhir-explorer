@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 import { SectionLoader } from "./loading";
 import { FhirServer, FhirServerOptions, Header } from "@/components/Header";
@@ -55,6 +56,13 @@ export default function Home() {
         handleServerSelect={handleServerSelect}
         setView={setView}
       />
+      <Button
+        onClick={() => {
+          throw new Error("error on frontend");
+        }}
+      >
+        Click me
+      </Button>
       {/* Query FHIR Server */}
       {view === "query" ? (
         <section id="workspace">
