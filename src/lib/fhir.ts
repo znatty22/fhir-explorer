@@ -216,8 +216,21 @@ export async function getFhirData(
   oidcToken: string
 ): Promise<FhirResponseData> {
   let resp = null;
+
+  // If query for StructureDefinition, limit the request count to 10 since
+  // they are very large and slow down rendering
+  let adjustedUrl = url;
+  if (url.pathname === "/StructureDefinition") {
+    const search = url.search
+      .substring(1)
+      .split("&")
+      .filter((q) => !q.startsWith("_count"))
+      .join("&");
+    adjustedUrl = new URL(`${url.origin}${url.pathname}?${search}&_count=5`);
+  }
+  console.log(adjustedUrl);
   try {
-    resp = await fetch(url, {
+    resp = await fetch(adjustedUrl, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -228,7 +241,7 @@ export async function getFhirData(
     if (String(e.cause).includes("ENOTFOUND")) {
       return {
         error: "could_not_connect",
-        details: `Could not connect to FHIR server: ${url}`,
+        details: `Could not connect to FHIR server: ${adjustedUrl}`,
         status: 500,
       };
     }
