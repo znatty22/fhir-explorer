@@ -95,12 +95,17 @@ export default function FhirQueryResults({
               Response Body
             </h3>
           </div>
-          <h3 className="mx-2 text-sm text-slate-400 font-light">
-            Count:{" "}
-            <span>
-              {typeof data.total === "number" ? data.total : "unknown"}
-            </span>
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="mx-2 text-sm text-slate-400 font-light">
+              Total on Page: <span>{data?.entry?.length || 0}</span>
+            </h3>
+            <h3 className="mx-2 text-sm text-slate-400 font-light">
+              Total on Server:{" "}
+              <span>
+                {typeof data.total === "number" ? data.total : "unknown"}
+              </span>
+            </h3>
+          </div>
         </div>
         <CollapsibleContent className="space-y-2">
           {!!data && (
