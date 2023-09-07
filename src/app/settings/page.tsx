@@ -57,7 +57,12 @@ async function fetchServerConfigs(): Promise<{
 async function fetchServerStatus(url: string) {
   let status: ServerStatus = "unknown";
   try {
-    const resp = await fetch(new URL(`${url}/endpoint-health`));
+    const resp = await fetch("/api/status", {
+      method: "POST",
+      body: JSON.stringify({
+        fhirServerUrl: new URL(url),
+      }),
+    });
     const data = await resp.json();
     if (resp.ok) {
       status = data.status === "OPERATIONAL" ? "operational" : "offline";

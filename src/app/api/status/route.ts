@@ -1,26 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { getServerSession } from "next-auth";
-
 import { authOptions } from "@/lib/auth";
-import {
-  getOidcClient,
-  getToken,
-  getFhirData,
-  getTokenFromProxy,
-} from "@/lib/fhir";
+import { TokenResponseData, getOidcClient } from "@/lib/fhir";
+import { getTokenFromProxy, getToken } from "@/lib/fhir";
 
-type RequiredFhirParams = {
-  fhirServerUrl?: string;
-  fhirQuery?: string;
+type RequiredStatusParams = {
+  fhirServerUrl: string;
 };
+
 const schema = {
   fhirServerUrl: {
     type: "string",
     example: "http://myfhirserver.com",
-  },
-  fhirQuery: {
-    type: "string",
-    example: "/Patient?gender=male",
   },
 };
 
@@ -36,7 +28,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Validate request parameters
-  let params: RequiredFhirParams = {};
+  let params: RequiredStatusParams | null;
   let error = null;
   try {
     params = await request.json();
@@ -49,9 +41,8 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
-  if (!(params?.fhirServerUrl && params?.fhirQuery)) {
-    error =
-      "Missing one or more required parameters `fhirServerUrl`, `fhirQuery`";
+  if (!params?.fhirServerUrl) {
+    error = "Missing one or more required parameters `fhirServerUrl`";
     return NextResponse.json(
       { error: "missing_required", details: error },
       { status: 400 }
@@ -81,7 +72,7 @@ export async function POST(request: NextRequest) {
   // If fetching the access token for the local FHIR server then we must
   // fetch it from the issuer proxy since we cannot query the issuer directly
   // See https://github.com/kids-first/kf-api-fhir-service#-important-note-about-keycloak
-  let tokenResp;
+  let tokenResp: TokenResponseData;
   if (String(fhirServerUrl).startsWith("http://localhost")) {
     tokenResp = await getTokenFromProxy(oidcClient);
   } else {
@@ -93,48 +84,33 @@ export async function POST(request: NextRequest) {
   // Get FHIR Data
   let url = null;
   try {
-    url = new URL(
-      [
-        String(params.fhirServerUrl).replace(/\/$/, ""),
-        params.fhirQuery.replace(/^\/+/g, "").replace(/['"]+/g, ""),
-      ].join("/")
-    );
+    url = new URL("/endpoint-health", fhirServerUrl);
   } catch (e) {
     return NextResponse.json(
-      { error: "bad_fhir_query_url", details: `Invalid query: ${url}` },
+      { error: "bad_fhir_server_url", details: `Invalid url: ${url}` },
       { status: 400 }
     );
   }
 
-  const fhirResp = await getFhirData(url, tokenResp.access_token!);
-  if (fhirResp.error) {
-    return NextResponse.json(fhirResp, { status: fhirResp.status });
+  let data;
+  try {
+    const resp = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${tokenResp.access_token}`,
+      },
+    });
+    data = await resp.json();
+  } catch (e: any) {
+    if (String(e.cause).includes("ENOTFOUND")) {
+      return {
+        error: "could_not_connect",
+        details: `Could not connect to FHIR server: ${url}`,
+        status: 500,
+      };
+    }
+    throw e;
   }
-
-  // Add smilecdr headers to response
-  const headers = Object.fromEntries(fhirResp.headers!);
-  return NextResponse.json(fhirResp.data, {
-    headers: {
-      "x-powered-by": headers["x-powered-by"],
-      "x-request-id": headers["x-request-id"],
-    },
-  });
-}
-export async function GET(request: NextRequest) {
-  return NextResponse.json(
-    { error: "unsupported_method", details: "HTTP Method Not Allowed" },
-    { status: 405 }
-  );
-}
-export async function PUT(request: NextRequest) {
-  return NextResponse.json(
-    { error: "unsupported_method", details: "HTTP Method Not Allowed" },
-    { status: 405 }
-  );
-}
-export async function PATCH(request: NextRequest) {
-  return NextResponse.json(
-    { error: "unsupported_method", details: "HTTP Method Not Allowed" },
-    { status: 405 }
-  );
+  return NextResponse.json(data);
 }
